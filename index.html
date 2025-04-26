@@ -120,9 +120,22 @@
 
       graphicsLayer.add(polygonGraphic);
 
+      // Updated popup for EDUs to explain missing data
       const popupEduusa = {
         title: "EDUs",
-        content: "<b>Name:</b> {INSTNM}<br><b>Total Enrollment:</b> {TOT_ENROLL}<br>"
+        content: function (feature) {
+          const name = feature.graphic.attributes.INSTNM || "Unknown School";
+          const enrollment = feature.graphic.attributes.TOT_ENROLL;
+
+          return `
+            <b>Name:</b> ${name}<br>
+            <b>Total Enrollment:</b> ${
+              enrollment != null
+                ? enrollment
+                : "Data not available — enrollment field missing or restricted (checked with REST query)."
+            }<br>
+          `;
+        }
       };
 
       const useduLayer = new FeatureLayer({
