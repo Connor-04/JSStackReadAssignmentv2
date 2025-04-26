@@ -1,2 +1,1 @@
-# esrijs
-My first Esri JS Map
+// I have edited my metadata! - Connor Popp
