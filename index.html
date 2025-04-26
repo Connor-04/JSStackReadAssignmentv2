@@ -71,6 +71,54 @@
 
       graphicsLayer.add(pointGraphic);
 
+      const polyline = {
+        type: "polyline",
+        paths: [
+          [-97.746, 30.270],
+          [-97.740, 30.270]
+        ]
+      };
+
+      const lineSymbol = {
+        type: "simple-line",
+        color: [255, 0, 0],
+        width: 8
+      };
+
+      const polylineGraphic = new Graphic({
+        geometry: polyline,
+        symbol: lineSymbol
+      });
+
+      graphicsLayer.add(polylineGraphic);
+
+      const polygon = {
+        type: "polygon",
+        rings: [
+          [-97.744, 30.266],
+          [-97.742, 30.266],
+          [-97.742, 30.268],
+          [-97.744, 30.268],
+          [-97.744, 30.266]
+        ]
+      };
+
+      const polygonSymbol = {
+        type: "simple-fill",
+        color: [255, 165, 0, 0.6],
+        outline: {
+          color: [255, 255, 255],
+          width: 1
+        }
+      };
+
+      const polygonGraphic = new Graphic({
+        geometry: polygon,
+        symbol: polygonSymbol
+      });
+
+      graphicsLayer.add(polygonGraphic);
+
     });
   </script>
 
