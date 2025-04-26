@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Hello, Version Control!</title>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="" />
-
-  <!-- calls for the arcgis api's CSS file and JS library. -->
+  <title>Hello, Version Control!</title>
   <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
   <script src="https://js.arcgis.com/4.25/"></script>
+</head>
+<body>
+  <div id="viewDiv" style="height: 100vh; width: 100vw;"></div>
 
-  <!-- Adding the modules, API key, and map constant needed for a full screen map app -->
   <script>
     require([
       "esri/config",
@@ -19,14 +19,16 @@
       "esri/Graphic",
       "esri/layers/GraphicsLayer",
       "esri/layers/FeatureLayer"
-    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer) {
+    ], function(esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer) {
 
-      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurNAUgv3aeRUmzJ4ckMevLQLfVJhdc-z1-a5rmBvbZM6HiAtWhTkHR1uPqL3lwJdP49LWHB6rjySi-OGZeNP1ea6oiztHSf22dFyO6r4o94L1an9zLTOBsN3vlqSz7k8MyUO9e1udJ3zNViSQ518xOFVwCnGBfyh40rSb4E2X3zsumGVzsUowRjXGPUi8Odwr1Y9iVZinjPQa-7TSBIuR8E4.AT1_EtHHMprs";
+      esriConfig.apiKey = "AAPKxy8BH1VEsoebNVZXo8HurNAUgV3aeRUMzJ4z";
 
+      // Create map
       const map = new Map({
         basemap: "arcgis-topographic"
       });
 
+      // Create view
       const view = new MapView({
         container: "viewDiv",
         map: map,
@@ -34,9 +36,11 @@
         zoom: 13
       });
 
+      // Create graphics layer
       const graphicsLayer = new GraphicsLayer();
       map.add(graphicsLayer);
 
+      // Create point symbol
       const point = {
         type: "point",
         longitude: -97.750689,
@@ -63,6 +67,7 @@
         Description: "A bronze sculpture of Stevie Ray Vaughan by Ralph Helmick"
       };
 
+      // Add point to graphics layer
       const pointGraphic = new Graphic({
         geometry: point,
         symbol: simpleMarkerSymbol,
@@ -72,47 +77,51 @@
 
       graphicsLayer.add(pointGraphic);
 
+      // Create polyline
       const polyline = {
         type: "polyline",
         paths: [
-          [-97.746, 30.270],
-          [-97.740, 30.270]
+          [-97.7465, 30.2715],
+          [-97.7465, 30.2655]
         ]
       };
 
-      const lineSymbol = {
+      const polylineSymbol = {
         type: "simple-line",
         color: [255, 0, 0],
-        width: 8
+        width: 6
       };
 
+      // Add polyline to graphics layer
       const polylineGraphic = new Graphic({
         geometry: polyline,
-        symbol: lineSymbol
+        symbol: polylineSymbol
       });
 
       graphicsLayer.add(polylineGraphic);
 
+      // Create polygon
       const polygon = {
         type: "polygon",
         rings: [
-          [-97.744, 30.266],
-          [-97.742, 30.266],
-          [-97.742, 30.268],
-          [-97.744, 30.268],
-          [-97.744, 30.266]
+          [-97.7485, 30.2665],
+          [-97.7445, 30.2665],
+          [-97.7445, 30.2635],
+          [-97.7485, 30.2635],
+          [-97.7485, 30.2665]
         ]
       };
 
       const polygonSymbol = {
         type: "simple-fill",
-        color: [255, 165, 0, 0.6],
+        color: [255, 165, 0, 0.5],
         outline: {
-          color: [255, 255, 255],
+          color: [0, 0, 0],
           width: 1
         }
       };
 
+      // Add polygon to graphics layer
       const polygonGraphic = new Graphic({
         geometry: polygon,
         symbol: polygonSymbol
@@ -120,72 +129,40 @@
 
       graphicsLayer.add(polygonGraphic);
 
-      // Updated Challenge 3 popup for EDUs
+      // Add feature layer for colleges
       const popupEduusa = {
-        title: "{INSTNM}",
-        content: function (feature) {
-          const attributes = feature.graphic.attributes;
-          const name = attributes.INSTNM || "Unknown School";
-          const city = attributes.CITY || "City not listed";
-          const state = attributes.STABBR || "State not listed";
-          const webaddr = attributes.WEBADDR
-            ? `<a href="${attributes.WEBADDR}" target="_blank">Visit Website</a>`
-            : "Website not available";
-          const enrollment = attributes.TOT_ENROLL;
-
-          return `
-            <b>Name:</b> ${name}<br>
-            <b>Location:</b> ${city}, ${state}<br>
-            <b>Website:</b> ${webaddr}<br>
-            <b>Total Enrollment:</b> ${
-              enrollment != null
-                ? enrollment
-                : "Data not available — enrollment field missing or restricted (checked with REST query)."
-            }
-          `;
-        }
+        title: "{NAME}",
+        content: `
+          <b>Name:</b> {NAME}<br>
+          <b>Location:</b> {CITY}, {STATE}<br>
+          <b>Website:</b> <a href="{WEBADDR}" target="_blank">Visit Website</a><br>
+          <b>Total Enrollment:</b> Data not available – enrollment field missing or restricted (checked with REST query).
+        `
       };
 
       const useduLayer = new FeatureLayer({
-        url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
-        outFields: ["INSTNM", "TOT_ENROLL", "CITY", "STABBR", "WEBADDR"],
-        popupTemplate: popupEduusa,
-        renderer: {
-          type: "simple",
-          symbol: {
-            type: "simple-marker",
-            style: "diamond",
-            color: [0, 112, 255, 0.8],
-            outline: {
-              color: [255, 255, 255],
-              width: 1
-            }
-          }
-        }
+        url: "https://services2.arcgis.com/FiaPA4gaOiQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
+        outFields: ["NAME", "CITY", "STATE", "WEBADDR"],
+        popupTemplate: popupEduusa
       });
 
       map.add(useduLayer);
 
+      // Add feature layer for airports
+      const popupAirports = {
+        title: "{NAME}",
+        content: "<b>City:</b> {CITY}<br><b>State:</b> {STATE}"
+      };
+
+      const airportsLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports_ConnorPopp/FeatureServer",
+        outFields: ["NAME", "CITY", "STATE"],
+        popupTemplate: popupAirports
+      });
+
+      map.add(airportsLayer);
+
     });
   </script>
-
-  <!-- css to make a full screen map -->
-  <style>
-    html,
-    body,
-    #viewDiv {
-      padding: 0;
-      margin: 0;
-      height: 100%;
-      width: 100%;
-    }
-  </style>
-
-</head>
-<body>
-
-  <!-- the div to display the map -->
-  <div id="viewDiv"></div>
-
 </body>
 </html>
