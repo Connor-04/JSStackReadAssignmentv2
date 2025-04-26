@@ -120,27 +120,35 @@
 
       graphicsLayer.add(polygonGraphic);
 
-      // Updated popup for EDUs to explain missing data
+      // Updated Challenge 3 popup for EDUs
       const popupEduusa = {
-        title: "EDUs",
+        title: "{INSTNM}",
         content: function (feature) {
-          const name = feature.graphic.attributes.INSTNM || "Unknown School";
-          const enrollment = feature.graphic.attributes.TOT_ENROLL;
+          const attributes = feature.graphic.attributes;
+          const name = attributes.INSTNM || "Unknown School";
+          const city = attributes.CITY || "City not listed";
+          const state = attributes.STABBR || "State not listed";
+          const webaddr = attributes.WEBADDR
+            ? `<a href="${attributes.WEBADDR}" target="_blank">Visit Website</a>`
+            : "Website not available";
+          const enrollment = attributes.TOT_ENROLL;
 
           return `
             <b>Name:</b> ${name}<br>
+            <b>Location:</b> ${city}, ${state}<br>
+            <b>Website:</b> ${webaddr}<br>
             <b>Total Enrollment:</b> ${
               enrollment != null
                 ? enrollment
                 : "Data not available — enrollment field missing or restricted (checked with REST query)."
-            }<br>
+            }
           `;
         }
       };
 
       const useduLayer = new FeatureLayer({
         url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
-        outFields: ["INSTNM", "TOT_ENROLL"],
+        outFields: ["INSTNM", "TOT_ENROLL", "CITY", "STABBR", "WEBADDR"],
         popupTemplate: popupEduusa,
         renderer: {
           type: "simple",
