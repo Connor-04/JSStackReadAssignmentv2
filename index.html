@@ -129,11 +129,11 @@
           const city = attributes.CITY || "City not listed";
           const state = attributes.STABBR || "State not listed";
           const webaddr = attributes.WEBADDR
-            ? <a href="${attributes.WEBADDR}" target="_blank">Visit Website</a>
+            ? `<a href="${attributes.WEBADDR}" target="_blank">Visit Website</a>`
             : "Website not available";
           const enrollment = attributes.TOT_ENROLL;
 
-          return 
+          return `
             <b>Name:</b> ${name}<br>
             <b>Location:</b> ${city}, ${state}<br>
             <b>Website:</b> ${webaddr}<br>
@@ -142,7 +142,7 @@
                 ? enrollment
                 : "Data not available — enrollment field missing or restricted (checked with REST query)."
             }
-          ;
+          `;
         }
       };
 
